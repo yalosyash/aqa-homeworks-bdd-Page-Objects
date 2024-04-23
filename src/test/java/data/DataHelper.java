@@ -1,17 +1,8 @@
 package data;
 
-import com.github.javafaker.Faker;
-import io.restassured.builder.RequestSpecBuilder;
-import io.restassured.filter.log.LogDetail;
-import io.restassured.http.ContentType;
-import io.restassured.specification.RequestSpecification;
-
-import java.util.Locale;
-
-import static io.restassured.RestAssured.given;
-
 public class DataHelper {
-    private DataHelper() {}
+    private DataHelper() {
+    }
 
     public static class AuthInfo {
         private String login;
@@ -20,6 +11,14 @@ public class DataHelper {
         public AuthInfo(String login, String password) {
             this.login = login;
             this.password = password;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public String getLogin() {
+            return login;
         }
     }
 
@@ -30,13 +29,16 @@ public class DataHelper {
     public static class VerificationCode {
         private String code;
 
-        public VerificationCode (String code){
+        public VerificationCode(String code) {
             this.code = code;
+        }
+
+        public String getCode() {
+            return code;
         }
     }
 
-    public static VerificationCode getVVerificationCode () {
+    public static VerificationCode getVerificationCodeFor(AuthInfo authInfo) {
         return new VerificationCode("12345");
     }
-
 }
