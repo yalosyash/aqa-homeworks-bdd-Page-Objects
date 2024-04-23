@@ -1,3 +1,5 @@
+[![Java CI with Gradle](https://github.com/yalosyash/aqa-homeworks-bdd-Page-Objects/actions/workflows/gradle.yml/badge.svg)](https://github.com/yalosyash/aqa-homeworks-bdd-Page-Objects/actions/workflows/gradle.yml)
+
 # Домашнее задание к занятию «2.4. BDD»
 
 В качестве результата пришлите ссылки на ваши GitHub-проекты в личном кабинете студента на
