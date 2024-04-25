@@ -28,7 +28,7 @@ public class DashboardPage {
         cards.get(0).shouldBe(visible);
     }
 
-    private SelenideElement findCardElementById (String id) {
+    private SelenideElement findCardElementById(String id) {
         for (SelenideElement el : cards) {
             String cardId = el.getAttribute(cardAttribute);
             if (cardId.equals(id)) {
@@ -39,7 +39,7 @@ public class DashboardPage {
     }
 
     public int getCardBalance(String id) {
-        String text = findCardElementById(id).text();
+        String text = findCardElementById(id).shouldBe(visible).text();
         return extractBalance(text);
     }
 
@@ -55,14 +55,12 @@ public class DashboardPage {
         el.lastChild().click();
     }
 
-    public DashboardPage validTransfer(int amount, String from, String to) {
-
-        clickButtonBalanceUp(to);
+    public void validTransfer(int amount, String numberFrom, String IdTo) {
+        clickButtonBalanceUp(IdTo);
 
         $("h1").shouldBe(visible).shouldHave(text("Пополнение карты"));
-        inputAmount.setValue(Integer.toString(amount));
-        inputFrom.setValue(from);
+        inputAmount.shouldBe(visible).setValue(Integer.toString(amount));
+        inputFrom.setValue(numberFrom);
         submitButton.click();
-        return new DashboardPage();
     }
 }

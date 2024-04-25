@@ -2,6 +2,7 @@ package test;
 
 import com.codeborne.selenide.Configuration;
 import data.DataHelper;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import page.LoginPage;
@@ -34,23 +35,37 @@ class MoneyTransferTest {
     String cardFrom1 = "5559 0000 0000 0001";
     String cardFrom2 = "5559 0000 0000 0002";
 
+    int card1Balance = 10_000;
+    int card2Balance = 10_000;
+
     @Test
     void should() throws InterruptedException {
+
+        // авторизация
         var loginPage = new LoginPage();
         var authInfo = DataHelper.getAuthInfo();
         var verificationPage = loginPage.validLogin(authInfo);
         var verificationCode = DataHelper.getVerificationCodeFor();
 
+        // получаем страницу с картами
         var dashboardPage = verificationPage.validVerify(verificationCode);
 
-//        dashboardPage.getCardBalance(cardId1);
-        dashboardPage.validTransfer(5000, cardFrom2, cardId1);
+        // откуда и куда хотим перевести
+        String from = cardFrom1;
+        String to = cardId2;
+        int transfer = 5_000;
 
-//        Thread.sleep(1000);
+        // логика для проверки теста
+        card1Balance -= transfer;
+        card2Balance += transfer;
 
-//        int balance = dashboardPage.getCardBalance(card0001);
-//        Assertions.assertEquals(balance, 10_000);
+        // проводим перевод
+        dashboardPage.validTransfer(transfer, from, to);
 
+        dashboardPage.getCardBalance(to);
+
+        // проверка теста
+        Assertions.assertEquals(card2Balance, dashboardPage.getCardBalance(to));
     }
 
 }
