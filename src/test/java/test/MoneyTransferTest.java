@@ -32,14 +32,11 @@ class MoneyTransferTest {
     String cardId1 = "92df3f1c-a033-48e6-8390-206f6b1f56c0";
     String cardId2 = "0f3f5c2a-249e-4c3d-8287-09f7a039391d";
 
-    String cardFrom1 = "5559 0000 0000 0001";
-    String cardFrom2 = "5559 0000 0000 0002";
-
-    int card1Balance = 10_000;
-    int card2Balance = 10_000;
+    String fromCard1 = "5559 0000 0000 0001";
+    String fromCard2 = "5559 0000 0000 0002";
 
     @Test
-    void should() throws InterruptedException {
+    void shouldTransferPositiveSum() {
 
         // авторизация
         var loginPage = new LoginPage();
@@ -51,21 +48,85 @@ class MoneyTransferTest {
         var dashboardPage = verificationPage.validVerify(verificationCode);
 
         // откуда и куда хотим перевести
-        String from = cardFrom1;
+        String from = fromCard1;
         String to = cardId2;
-        int transfer = 5_000;
+        int transfer = 10_000;
 
         // логика для проверки теста
-        card1Balance -= transfer;
-        card2Balance += transfer;
+        int card1Balance = dashboardPage.getCardBalance(cardId1) - transfer;
+        int card2Balance = dashboardPage.getCardBalance(cardId2) + transfer;
 
         // проводим перевод
         dashboardPage.validTransfer(transfer, from, to);
 
-        dashboardPage.getCardBalance(to);
-
         // проверка теста
+        Assertions.assertEquals(card1Balance, dashboardPage.getCardBalance(cardId1));
         Assertions.assertEquals(card2Balance, dashboardPage.getCardBalance(to));
     }
 
+    @Test
+    void shouldTransferPositiveSumFromAnotherCard() {
+
+        var loginPage = new LoginPage();
+        var authInfo = DataHelper.getAuthInfo();
+        var verificationPage = loginPage.validLogin(authInfo);
+        var verificationCode = DataHelper.getVerificationCodeFor();
+
+        var dashboardPage = verificationPage.validVerify(verificationCode);
+
+        String from = fromCard2;
+        String to = cardId1;
+        int transfer = 10_000;
+
+        int card1Balance = dashboardPage.getCardBalance(cardId1) + transfer;
+        int card2Balance = dashboardPage.getCardBalance(cardId2) - transfer;
+
+        dashboardPage.validTransfer(transfer, from, to);
+
+        Assertions.assertEquals(card1Balance, dashboardPage.getCardBalance(cardId1));
+        Assertions.assertEquals(card2Balance, dashboardPage.getCardBalance(cardId2));
+    }
+
+    @Test
+    void shouldNotTransferNegativeSum() {
+
+        var loginPage = new LoginPage();
+        var authInfo = DataHelper.getAuthInfo();
+        var verificationPage = loginPage.validLogin(authInfo);
+        var verificationCode = DataHelper.getVerificationCodeFor();
+
+        var dashboardPage = verificationPage.validVerify(verificationCode);
+
+        String from = fromCard1;
+        String to = cardId2;
+        int transfer = dashboardPage.getCardBalance(cardId1) + 5_000;
+
+        dashboardPage.validTransfer(transfer, from, to);
+
+        dashboardPage.getError();
+    }
+
+    @Test
+    void shouldToResetBalance() {
+
+        var loginPage = new LoginPage();
+        var authInfo = DataHelper.getAuthInfo();
+        var verificationPage = loginPage.validLogin(authInfo);
+        var verificationCode = DataHelper.getVerificationCodeFor();
+
+        var dashboardPage = verificationPage.validVerify(verificationCode);
+
+        // сброс балансов к начальным значениям
+        int actualBalanceCard1 = dashboardPage.getCardBalance(cardId1);
+        int actualBalanceCard2 = dashboardPage.getCardBalance(cardId2);
+
+        if (actualBalanceCard1 < actualBalanceCard2) {
+            dashboardPage.validTransfer(actualBalanceCard2 - 10_000, fromCard2, cardId1);
+        } else if (actualBalanceCard1 > actualBalanceCard2) {
+            dashboardPage.validTransfer(actualBalanceCard1 - 10_000, fromCard1, cardId2);
+        }
+
+        Assertions.assertEquals(10_000, dashboardPage.getCardBalance(cardId1));
+        Assertions.assertEquals(10_000, dashboardPage.getCardBalance(cardId2));
+    }
 }

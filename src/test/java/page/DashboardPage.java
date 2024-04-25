@@ -17,6 +17,8 @@ public class DashboardPage {
     private SelenideElement inputFrom = $("[data-test-id=from] input");
     private SelenideElement submitButton = $("[data-test-id=action-transfer]");
 
+    private SelenideElement errorNotification = $("[data-test-id=error-notification]");
+
     private String cardAttribute = "data-test-id";
 
     private final String balanceStart = "баланс: ";
@@ -62,5 +64,9 @@ public class DashboardPage {
         inputAmount.shouldBe(visible).setValue(Integer.toString(amount));
         inputFrom.setValue(numberFrom);
         submitButton.click();
+    }
+
+    public void getError() {
+        errorNotification.shouldBe(visible).shouldHave(text("Ошибка"));
     }
 }
