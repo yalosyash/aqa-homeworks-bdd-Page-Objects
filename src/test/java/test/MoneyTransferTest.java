@@ -14,10 +14,10 @@ import java.util.Map;
 import static com.codeborne.selenide.Selenide.open;
 
 class MoneyTransferTest {
-
     @BeforeEach
     void setup() {
-//      Выключение опции проверки пароля в Chrome
+
+        // Выключение опции проверки пароля в Chrome
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--start-maximized");
         Map<String, Object> prefs = new HashMap<String, Object>();
@@ -26,6 +26,25 @@ class MoneyTransferTest {
         options.setExperimentalOption("prefs", prefs);
         Configuration.browserCapabilities = options;
 
+        // Сброс балансов до начальных значений
+        open("http://localhost:9999");
+        var loginPage = new LoginPage();
+        var authInfo = DataHelper.getAuthInfo();
+        var verificationPage = loginPage.validLogin(authInfo);
+        var verificationCode = DataHelper.getVerificationCodeFor();
+
+        var dashboardPage = verificationPage.validVerify(verificationCode);
+
+        int actualBalanceCard1 = dashboardPage.getCardBalance(cardId1);
+        int actualBalanceCard2 = dashboardPage.getCardBalance(cardId2);
+
+        if (actualBalanceCard1 < actualBalanceCard2) {
+            dashboardPage.validTransfer(actualBalanceCard2 - 10_000, fromCard2, cardId1);
+        } else if (actualBalanceCard1 > actualBalanceCard2) {
+            dashboardPage.validTransfer(actualBalanceCard1 - 10_000, fromCard1, cardId2);
+        }
+
+        // Открытие страницы
         open("http://localhost:9999");
     }
 
@@ -106,27 +125,12 @@ class MoneyTransferTest {
         dashboardPage.getError();
     }
 
-    @Test
-    void shouldToResetBalance() {
-
-        var loginPage = new LoginPage();
-        var authInfo = DataHelper.getAuthInfo();
-        var verificationPage = loginPage.validLogin(authInfo);
-        var verificationCode = DataHelper.getVerificationCodeFor();
-
-        var dashboardPage = verificationPage.validVerify(verificationCode);
-
-        // сброс балансов к начальным значениям
-        int actualBalanceCard1 = dashboardPage.getCardBalance(cardId1);
-        int actualBalanceCard2 = dashboardPage.getCardBalance(cardId2);
-
-        if (actualBalanceCard1 < actualBalanceCard2) {
-            dashboardPage.validTransfer(actualBalanceCard2 - 10_000, fromCard2, cardId1);
-        } else if (actualBalanceCard1 > actualBalanceCard2) {
-            dashboardPage.validTransfer(actualBalanceCard1 - 10_000, fromCard1, cardId2);
-        }
-
-        Assertions.assertEquals(10_000, dashboardPage.getCardBalance(cardId1));
-        Assertions.assertEquals(10_000, dashboardPage.getCardBalance(cardId2));
-    }
+//    @Test
+//    void shouldToResetBalance() {
+//
+//
+//
+//        Assertions.assertEquals(10_000, dashboardPage.getCardBalance(cardId1));
+//        Assertions.assertEquals(10_000, dashboardPage.getCardBalance(cardId2));
+//    }
 }
