@@ -2,6 +2,7 @@ package page;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
+import data.DataHelper;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.$;
@@ -10,7 +11,7 @@ import static com.codeborne.selenide.Selenide.$$;
 public class DashboardPage {
 
     private SelenideElement dashboard = $("[data-test-id=dashboard]");
-    private ElementsCollection cards = $$(".list__item div");
+    private ElementsCollection cardsElements = $$(".list__item div");
     private SelenideElement actionReload = $("[data-test-id=action-reload]");
 
     private final String cardAttribute = "data-test-id";
@@ -19,11 +20,11 @@ public class DashboardPage {
 
     public DashboardPage() {
         dashboard.shouldBe(visible);
-        cards.get(0).shouldBe(visible);
+        cardsElements.get(0).shouldBe(visible);
     }
 
-    public int getCardBalance(String id) {
-        return extractBalance(cards.findBy(attribute(cardAttribute, id)).shouldBe(visible).text());
+    public int getCardBalance(DataHelper.Card card) {
+        return extractBalance(cardsElements.findBy(attribute(cardAttribute, card.getId())).shouldBe(visible).text());
     }
 
     private int extractBalance(String text) {
@@ -33,8 +34,8 @@ public class DashboardPage {
         return (int) Math.round(Double.parseDouble(value.replace(",", "."))); // отбрасываю копейки, меняю запятые на точки
     }
 
-    public TransferPage clickButtonBalanceUp(String id) {
-        cards.findBy(attribute(cardAttribute, id)).lastChild().click();
+    public TransferPage clickButtonBalanceUp(DataHelper.Card card) {
+        cardsElements.findBy(attribute(cardAttribute, card.getId())).lastChild().click();
         return new TransferPage();
     }
 

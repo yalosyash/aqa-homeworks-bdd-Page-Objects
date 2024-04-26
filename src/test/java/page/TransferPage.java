@@ -1,6 +1,7 @@
 package page;
 
 import com.codeborne.selenide.SelenideElement;
+import data.DataHelper;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
@@ -19,9 +20,9 @@ public class TransferPage {
         inputAmount.shouldBe(visible);
     }
 
-    public void validTransfer(int amount, String numberFrom) {
+    public void validTransfer(int amount, DataHelper.Card card) {
         inputAmount.setValue(Integer.toString(amount));
-        inputFrom.setValue(numberFrom);
+        inputFrom.setValue(card.getNumber());
         submitButton.click();
     }
 
@@ -31,5 +32,9 @@ public class TransferPage {
 
     public void clickActionCancel() {
         actionCancel.click();
+    }
+
+    public void clickSubmitButton() {
+        submitButton.click();
     }
 }

@@ -6,8 +6,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import page.LoginPage;
 
-import java.util.Random;
-
 import static com.codeborne.selenide.Selenide.open;
 
 class MoneyTransferTest {
@@ -24,26 +22,23 @@ class MoneyTransferTest {
 
         var dashboardPage = verificationPage.validVerify(verificationCode);
 
-        int actualBalanceCard1 = dashboardPage.getCardBalance(cardId1);
-        int actualBalanceCard2 = dashboardPage.getCardBalance(cardId2);
+        var card1 = DataHelper.getCardInfo1();
+        var card2 = DataHelper.getCardInfo2();
+
+        int actualBalanceCard1 = dashboardPage.getCardBalance(card1);
+        int actualBalanceCard2 = dashboardPage.getCardBalance(card2);
 
         if (actualBalanceCard1 < actualBalanceCard2) {
-            var transferPage = dashboardPage.clickButtonBalanceUp(cardId1);
-            transferPage.validTransfer(actualBalanceCard2 - 10_000, fromCard2);
+            var transferPage = dashboardPage.clickButtonBalanceUp(card1);
+            transferPage.validTransfer(actualBalanceCard2 - 10_000, card2);
         } else if (actualBalanceCard1 > actualBalanceCard2) {
-            var transferPage = dashboardPage.clickButtonBalanceUp(cardId2);
-            transferPage.validTransfer(actualBalanceCard1 - 10_000, fromCard1);
+            var transferPage = dashboardPage.clickButtonBalanceUp(card2);
+            transferPage.validTransfer(actualBalanceCard1 - 10_000, card1);
         }
 
         // Открытие страницы
         open("http://localhost:9999");
     }
-
-    String cardId1 = "92df3f1c-a033-48e6-8390-206f6b1f56c0";
-    String cardId2 = "0f3f5c2a-249e-4c3d-8287-09f7a039391d";
-
-    String fromCard1 = "5559 0000 0000 0001";
-    String fromCard2 = "5559 0000 0000 0002";
 
     @Test
     void shouldTransferPositiveSum() {
@@ -58,23 +53,23 @@ class MoneyTransferTest {
         var dashboardPage = verificationPage.validVerify(verificationCode);
 
         // откуда и куда хотим перевести
-        String from = fromCard1;
-        String to = cardId2;
+        var cardTo = DataHelper.getCardInfo2();
+        var cardFrom = DataHelper.getCardInfo1();
         int transfer = 10_000;
 
         // логика для проверки теста
-        int card1Balance = dashboardPage.getCardBalance(cardId1) - transfer;
-        int card2Balance = dashboardPage.getCardBalance(cardId2) + transfer;
+        int card1Balance = dashboardPage.getCardBalance(cardTo) + transfer;
+        int card2Balance = dashboardPage.getCardBalance(cardFrom) - transfer;
 
         // получаем страницу перевода
-        var transferPage = dashboardPage.clickButtonBalanceUp(cardId2);
+        var transferPage = dashboardPage.clickButtonBalanceUp(cardTo);
 
         // проводим перевод
-        transferPage.validTransfer(transfer, from);
+        transferPage.validTransfer(transfer, cardFrom);
 
         // проверка теста
-        Assertions.assertEquals(card1Balance, dashboardPage.getCardBalance(cardId1));
-        Assertions.assertEquals(card2Balance, dashboardPage.getCardBalance(cardId2));
+        Assertions.assertEquals(card1Balance, dashboardPage.getCardBalance(cardTo));
+        Assertions.assertEquals(card2Balance, dashboardPage.getCardBalance(cardFrom));
     }
 
     @Test
@@ -87,18 +82,19 @@ class MoneyTransferTest {
 
         var dashboardPage = verificationPage.validVerify(verificationCode);
 
-        String from = fromCard2;
-        String to = cardId1;
+        var cardTo = DataHelper.getCardInfo1();
+        var cardFrom = DataHelper.getCardInfo2();
         int transfer = 10_000;
 
-        int card1Balance = dashboardPage.getCardBalance(cardId1) + transfer;
-        int card2Balance = dashboardPage.getCardBalance(cardId2) - transfer;
+        int card1Balance = dashboardPage.getCardBalance(cardTo) + transfer;
+        int card2Balance = dashboardPage.getCardBalance(cardFrom) - transfer;
 
-        var transferPage = dashboardPage.clickButtonBalanceUp(cardId1);
-        transferPage.validTransfer(transfer, from);
+        var transferPage = dashboardPage.clickButtonBalanceUp(cardTo);
 
-        Assertions.assertEquals(card1Balance, dashboardPage.getCardBalance(cardId1));
-        Assertions.assertEquals(card2Balance, dashboardPage.getCardBalance(cardId2));
+        transferPage.validTransfer(transfer, cardFrom);
+
+        Assertions.assertEquals(card1Balance, dashboardPage.getCardBalance(cardTo));
+        Assertions.assertEquals(card2Balance, dashboardPage.getCardBalance(cardFrom));
     }
 
     @Test
@@ -111,12 +107,13 @@ class MoneyTransferTest {
 
         var dashboardPage = verificationPage.validVerify(verificationCode);
 
-        String from = fromCard1;
+        var cardTo = DataHelper.getCardInfo1();
+        var cardFrom = DataHelper.getCardInfo2();
 
-        int transfer = dashboardPage.getCardBalance(cardId1) + 5_000;
+        int transfer = dashboardPage.getCardBalance(cardFrom) + 5_000;
 
-        var transferPage = dashboardPage.clickButtonBalanceUp(cardId2);
-        transferPage.validTransfer(transfer, from);
+        var transferPage = dashboardPage.clickButtonBalanceUp(cardTo);
+        transferPage.validTransfer(transfer, cardFrom);
 
         transferPage.getError();
     }
@@ -130,10 +127,26 @@ class MoneyTransferTest {
         var verificationCode = DataHelper.getVerificationCodeFor();
 
         var dashboardPage = verificationPage.validVerify(verificationCode);
-        int expect = dashboardPage.getCardBalance(cardId2);
-        var transferPage = dashboardPage.clickButtonBalanceUp(cardId2);
+        var card = DataHelper.getCardInfo1();
+        int expect = dashboardPage.getCardBalance(card);
+        var transferPage = dashboardPage.clickButtonBalanceUp(card);
         transferPage.clickActionCancel();
         dashboardPage.clickActionReload();
-        Assertions.assertEquals(expect, dashboardPage.getCardBalance(cardId2));
+        Assertions.assertEquals(expect, dashboardPage.getCardBalance(card));
+    }
+
+    @Test
+    void shouldErrorOnTransferPage() {
+
+        var loginPage = new LoginPage();
+        var authInfo = DataHelper.getAuthInfo();
+        var verificationPage = loginPage.validLogin(authInfo);
+        var verificationCode = DataHelper.getVerificationCodeFor();
+
+        var dashboardPage = verificationPage.validVerify(verificationCode);
+        var card = DataHelper.getCardInfo1();
+        var transferPage = dashboardPage.clickButtonBalanceUp(card);
+        transferPage.clickSubmitButton();
+        transferPage.getError();
     }
 }
