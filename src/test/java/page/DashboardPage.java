@@ -11,6 +11,7 @@ public class DashboardPage {
 
     private SelenideElement dashboard = $("[data-test-id=dashboard]");
     private ElementsCollection cards = $$(".list__item div");
+    private SelenideElement actionReload = $("[data-test-id=action-reload]");
 
     private final String cardAttribute = "data-test-id";
     private final String balanceStart = "баланс: ";
@@ -21,13 +22,8 @@ public class DashboardPage {
         cards.get(0).shouldBe(visible);
     }
 
-    private SelenideElement findCardElementById(String id) {
-        return cards.findBy(attribute(cardAttribute, id));
-    }
-
     public int getCardBalance(String id) {
-        String text = findCardElementById(id).shouldBe(visible).text();
-        return extractBalance(text);
+        return extractBalance(cards.findBy(attribute(cardAttribute, id)).shouldBe(visible).text());
     }
 
     private int extractBalance(String text) {
@@ -38,8 +34,11 @@ public class DashboardPage {
     }
 
     public TransferPage clickButtonBalanceUp(String id) {
-        SelenideElement el = findCardElementById(id);
-        el.lastChild().click();
+        cards.findBy(attribute(cardAttribute, id)).lastChild().click();
         return new TransferPage();
+    }
+
+    public void clickActionReload() {
+        actionReload.click();
     }
 }

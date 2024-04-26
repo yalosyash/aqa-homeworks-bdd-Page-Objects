@@ -12,6 +12,7 @@ public class TransferPage {
     private SelenideElement inputFrom = $("[data-test-id=from] input");
     private SelenideElement submitButton = $("[data-test-id=action-transfer]");
     private SelenideElement errorNotification = $("[data-test-id=error-notification]");
+    private SelenideElement actionCancel = $("[data-test-id=action-cancel]");
 
     public TransferPage() {
         $("h1").shouldBe(visible).shouldHave(text("Пополнение карты"));
@@ -26,5 +27,9 @@ public class TransferPage {
 
     public void getError() {
         errorNotification.shouldBe(visible).shouldHave(text("Ошибка"));
+    }
+
+    public void clickActionCancel() {
+        actionCancel.click();
     }
 }

@@ -6,6 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import page.LoginPage;
 
+import java.util.Random;
+
 import static com.codeborne.selenide.Selenide.open;
 
 class MoneyTransferTest {
@@ -117,5 +119,21 @@ class MoneyTransferTest {
         transferPage.validTransfer(transfer, from);
 
         transferPage.getError();
+    }
+
+    @Test
+    void shouldClickToCancelFromTransferPage() {
+
+        var loginPage = new LoginPage();
+        var authInfo = DataHelper.getAuthInfo();
+        var verificationPage = loginPage.validLogin(authInfo);
+        var verificationCode = DataHelper.getVerificationCodeFor();
+
+        var dashboardPage = verificationPage.validVerify(verificationCode);
+        int expect = dashboardPage.getCardBalance(cardId2);
+        var transferPage = dashboardPage.clickButtonBalanceUp(cardId2);
+        transferPage.clickActionCancel();
+        dashboardPage.clickActionReload();
+        Assertions.assertEquals(expect, dashboardPage.getCardBalance(cardId2));
     }
 }
