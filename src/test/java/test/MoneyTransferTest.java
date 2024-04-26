@@ -124,13 +124,4 @@ class MoneyTransferTest {
 
         dashboardPage.getError();
     }
-
-//    @Test
-//    void shouldToResetBalance() {
-//
-//
-//
-//        Assertions.assertEquals(10_000, dashboardPage.getCardBalance(cardId1));
-//        Assertions.assertEquals(10_000, dashboardPage.getCardBalance(cardId2));
-//    }
 }
