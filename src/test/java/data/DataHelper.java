@@ -1,40 +1,32 @@
 package data;
 
+import lombok.Value;
+
 public class DataHelper {
     private DataHelper() {
     }
 
+@Value
     public static class AuthInfo {
-        private String login;
-        private String password;
+        String login;
+        String password;
 
         public AuthInfo(String login, String password) {
             this.login = login;
             this.password = password;
         }
-
-        public String getPassword() {
-            return password;
-        }
-
-        public String getLogin() {
-            return login;
-        }
-    }
+}
 
     public static AuthInfo getAuthInfo() {
         return new AuthInfo("vasya", "qwerty123");
     }
 
+    @Value
     public static class VerificationCode {
-        private String code;
+        String code;
 
         public VerificationCode(String code) {
             this.code = code;
-        }
-
-        public String getCode() {
-            return code;
         }
     }
 
