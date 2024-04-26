@@ -26,9 +26,11 @@ class MoneyTransferTest {
         int actualBalanceCard2 = dashboardPage.getCardBalance(cardId2);
 
         if (actualBalanceCard1 < actualBalanceCard2) {
-            dashboardPage.validTransfer(actualBalanceCard2 - 10_000, fromCard2, cardId1);
+            var transferPage = dashboardPage.clickButtonBalanceUp(cardId1);
+            transferPage.validTransfer(actualBalanceCard2 - 10_000, fromCard2);
         } else if (actualBalanceCard1 > actualBalanceCard2) {
-            dashboardPage.validTransfer(actualBalanceCard1 - 10_000, fromCard1, cardId2);
+            var transferPage = dashboardPage.clickButtonBalanceUp(cardId2);
+            transferPage.validTransfer(actualBalanceCard1 - 10_000, fromCard1);
         }
 
         // Открытие страницы
@@ -62,12 +64,15 @@ class MoneyTransferTest {
         int card1Balance = dashboardPage.getCardBalance(cardId1) - transfer;
         int card2Balance = dashboardPage.getCardBalance(cardId2) + transfer;
 
+        // получаем страницу перевода
+        var transferPage = dashboardPage.clickButtonBalanceUp(cardId2);
+
         // проводим перевод
-        dashboardPage.validTransfer(transfer, from, to);
+        transferPage.validTransfer(transfer, from);
 
         // проверка теста
         Assertions.assertEquals(card1Balance, dashboardPage.getCardBalance(cardId1));
-        Assertions.assertEquals(card2Balance, dashboardPage.getCardBalance(to));
+        Assertions.assertEquals(card2Balance, dashboardPage.getCardBalance(cardId2));
     }
 
     @Test
@@ -87,7 +92,8 @@ class MoneyTransferTest {
         int card1Balance = dashboardPage.getCardBalance(cardId1) + transfer;
         int card2Balance = dashboardPage.getCardBalance(cardId2) - transfer;
 
-        dashboardPage.validTransfer(transfer, from, to);
+        var transferPage = dashboardPage.clickButtonBalanceUp(cardId1);
+        transferPage.validTransfer(transfer, from);
 
         Assertions.assertEquals(card1Balance, dashboardPage.getCardBalance(cardId1));
         Assertions.assertEquals(card2Balance, dashboardPage.getCardBalance(cardId2));
@@ -104,11 +110,12 @@ class MoneyTransferTest {
         var dashboardPage = verificationPage.validVerify(verificationCode);
 
         String from = fromCard1;
-        String to = cardId2;
+
         int transfer = dashboardPage.getCardBalance(cardId1) + 5_000;
 
-        dashboardPage.validTransfer(transfer, from, to);
+        var transferPage = dashboardPage.clickButtonBalanceUp(cardId2);
+        transferPage.validTransfer(transfer, from);
 
-        dashboardPage.getError();
+        transferPage.getError();
     }
 }

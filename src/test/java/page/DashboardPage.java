@@ -12,17 +12,9 @@ public class DashboardPage {
     private SelenideElement dashboard = $("[data-test-id=dashboard]");
     private ElementsCollection cards = $$(".list__item div");
 
-    private SelenideElement inputAmount = $("[data-test-id=amount] input");
-    private SelenideElement inputFrom = $("[data-test-id=from] input");
-    private SelenideElement submitButton = $("[data-test-id=action-transfer]");
-
-    private SelenideElement errorNotification = $("[data-test-id=error-notification]");
-
-    private String cardAttribute = "data-test-id";
-
+    private final String cardAttribute = "data-test-id";
     private final String balanceStart = "баланс: ";
     private final String balanceFinish = " р.";
-
 
     public DashboardPage() {
         dashboard.shouldBe(visible);
@@ -45,21 +37,9 @@ public class DashboardPage {
         return (int) Math.round(Double.parseDouble(value.replace(",", "."))); // отбрасываю копейки, меняю запятые на точки
     }
 
-    public void clickButtonBalanceUp(String id) {
+    public TransferPage clickButtonBalanceUp(String id) {
         SelenideElement el = findCardElementById(id);
         el.lastChild().click();
-    }
-
-    public void validTransfer(int amount, String numberFrom, String IdTo) {
-        clickButtonBalanceUp(IdTo);
-
-        $("h1").shouldBe(visible).shouldHave(text("Пополнение карты"));
-        inputAmount.shouldBe(visible).setValue(Integer.toString(amount));
-        inputFrom.setValue(numberFrom);
-        submitButton.click();
-    }
-
-    public void getError() {
-        errorNotification.shouldBe(visible).shouldHave(text("Ошибка"));
+        return new TransferPage();
     }
 }
