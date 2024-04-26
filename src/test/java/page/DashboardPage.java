@@ -3,8 +3,7 @@ package page;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 
-import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
@@ -31,13 +30,7 @@ public class DashboardPage {
     }
 
     private SelenideElement findCardElementById(String id) {
-        for (SelenideElement el : cards) {
-            String cardId = el.getAttribute(cardAttribute);
-            if (cardId.equals(id)) {
-                return el;
-            }
-        }
-        return null;
+        return cards.findBy(attribute(cardAttribute, id));
     }
 
     public int getCardBalance(String id) {
