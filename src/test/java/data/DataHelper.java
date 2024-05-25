@@ -11,10 +11,10 @@ public class DataHelper {
         String login;
         String password;
 
-        public AuthInfo(String login, String password) {
-            this.login = login;
-            this.password = password;
-        }
+//        public AuthInfo(String login, String password) {
+//            this.login = login;
+//            this.password = password;
+//        }
     }
 
     public static AuthInfo getAuthInfo() {
@@ -25,9 +25,9 @@ public class DataHelper {
     public static class VerificationCode {
         String code;
 
-        public VerificationCode(String code) {
-            this.code = code;
-        }
+//        public VerificationCode(String code) {
+//            this.code = code;
+//        }
     }
 
     public static VerificationCode getVerificationCodeFor() {
@@ -39,10 +39,10 @@ public class DataHelper {
         String id;
         String number;
 
-        public Card(String id, String number) {
-            this.id = id;
-            this.number = number;
-        }
+//        public Card(String id, String number) {
+//            this.id = id;
+//            this.number = number;
+//        }
     }
 
     public static Card getCardInfo1() {

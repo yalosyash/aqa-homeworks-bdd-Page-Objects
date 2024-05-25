@@ -127,12 +127,15 @@ class MoneyTransferTest {
         var verificationCode = DataHelper.getVerificationCodeFor();
 
         var dashboardPage = verificationPage.validVerify(verificationCode);
-        var card = DataHelper.getCardInfo1();
-        int expect = dashboardPage.getCardBalance(card);
-        var transferPage = dashboardPage.clickButtonBalanceUp(card);
+        var card1 = DataHelper.getCardInfo1();
+        var card2 = DataHelper.getCardInfo2();
+        int expect1 = dashboardPage.getCardBalance(card1);
+        int expect2 = dashboardPage.getCardBalance(card2);
+        var transferPage = dashboardPage.clickButtonBalanceUp(card1);
         transferPage.clickActionCancel();
         dashboardPage.clickActionReload();
-        Assertions.assertEquals(expect, dashboardPage.getCardBalance(card));
+        Assertions.assertEquals(expect1, dashboardPage.getCardBalance(card1));
+        Assertions.assertEquals(expect2, dashboardPage.getCardBalance(card2));
     }
 
     @Test
